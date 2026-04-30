@@ -164,8 +164,8 @@ class TaskOrchestrator(
                 val app = ClawApplication.instance
                 val status = if (result.isSuccess) app.getString(R.string.channel_msg_tool_success) else app.getString(R.string.channel_msg_tool_failure)
                 var data = if (result.isSuccess) result.data else result.error
-                if (data != null && data.length > 300) {
-                    data = data.substring(0, 300) + "...(truncated)"
+                if (data != null && data.length > 2000) {
+                    data = data.substring(0, 2000) + "...(truncated)"
                 }
                 if (!result.isSuccess) {
                     XLog.e(TAG, "!!!!!!!!!!Fail: $toolName, $parameters $data")

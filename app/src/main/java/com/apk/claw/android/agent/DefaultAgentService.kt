@@ -135,6 +135,34 @@ class DefaultAgentService : AgentService {
         sb.append("- 包名: ").append(app.packageName).append("\n")
         sb.append("- 当用户提到'自己/本应用/这个应用'时，指的就是上述应用\n")
 
+        // General operation rules
+        sb.append("\n## 通用操作规则\n")
+        sb.append("- 进入任何新页面后，必须先调用 get_screen_info 确认当前页面身份\n")
+        sb.append("- 执行任何 tap/swipe 前，必须确认目标元素在当前页面确实存在\n")
+        sb.append("- 如果操作后屏幕没有任何变化，说明操作无效或点错了位置，立即改用其他方法\n")
+        sb.append("- 不要连续 3 次以上执行相同操作——如果 3 次都无效，完全换个思路\n\n")
+
+        // WeChat-specific operation guide
+        sb.append("\n## 微信操作注意事项\n")
+        sb.append("### 微信底部导航\n")
+        sb.append("- 微信底部 Tab（微信/通讯录/发现/我）的 TextView 是 clickable=false，必须 tap Tab 容器（以坐标中心点点击）\n")
+        sb.append("- 自动化操作请保持仅在「微信」Tab 下的聊天功能，注意不要进入「发现」Tab，以免触发账号风控\n\n")
+        sb.append("### 微信聊天界面操作\n")
+        sb.append("- 聊天列表在「微信」Tab 下，包含所有最近会话，每个会话显示联系人名称、最后一条消息预览\n")
+        sb.append("- 进入具体聊天：在聊天列表中找到目标联系人名称，tap 该区域即可\n")
+        sb.append("- 聊天界面底部有输入框（EditText），点击后可输入文字；右侧有发送按钮\n")
+        sb.append("- 页面顶部显示当前聊天对象名称——用它验证是否进入了正确的对话\n")
+        sb.append("- 从聊天界面回退到列表：system_key(key=\"back\")\n")
+        sb.append("- 回到微信首页：多次 back 或 system_key(key=\"home\") 后重新打开微信\n\n")
+
+        // Long-term memory instructions
+        sb.append("\n## 长期记忆使用规则\n")
+        sb.append("- 每次任务成功完成后，必须调用 remember(action=\"save\", ...) 记录经验\n")
+        sb.append("- 记录内容应包括：任务描述(task)、关键步骤(summary)、经验教训(learnings用|分隔)、是否成功(success)\n")
+        sb.append("- 开始新任务时，若看到上面的[长期记忆]区域中有相关经验，直接参考它来加速执行\n")
+        sb.append("- 如果需要查找特定经验，可以使用 remember(action=\"search\", keyword=\"...\")\n")
+        sb.append("- 示例: remember(action=\"save\", task=\"打开微信\", summary=\"按Home→点击微信图标\", learnings=\"微信图标在桌面第2屏|图标位置约[540,1200]\", success=true)\n")
+
         return sb.toString()
     }
 
@@ -317,8 +345,9 @@ class DefaultAgentService : AgentService {
             return
         }
 
-        // 构建 System Prompt（原始 + 设备上下文）
-        val fullSystemPrompt = config.systemPrompt + buildDeviceContext()
+        // 构建 System Prompt（原始 + 设备上下文 + 长期记忆）
+        val memoryContext = com.apk.claw.android.utils.TaskMemory.recallForSystemPrompt()
+        val fullSystemPrompt = config.systemPrompt + buildDeviceContext() + memoryContext
 
         val messages = mutableListOf<ChatMessage>()
         messages.add(SystemMessage.from(fullSystemPrompt))

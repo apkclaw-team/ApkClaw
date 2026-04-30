@@ -196,6 +196,7 @@
     <string name="tool_name_send_file">发送文件</string>
     <string name="tool_name_wait">等待</string>
     <string name="tool_name_get_screen_info">获取屏幕信息</string>
+    <string name="tool_name_remember">长期记忆</string>
     <string name="tool_name_finish">完成任务</string>
     <string name="tool_name_open_app">打开应用</string>
     <string name="tool_name_get_installed_apps">获取应用列表</string>

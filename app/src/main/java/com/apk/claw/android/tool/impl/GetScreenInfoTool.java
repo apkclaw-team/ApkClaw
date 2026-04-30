@@ -6,10 +6,13 @@ import com.apk.claw.android.service.ClawAccessibilityService;
 import com.apk.claw.android.tool.BaseTool;
 import com.apk.claw.android.tool.ToolParameter;
 import com.apk.claw.android.tool.ToolResult;
+import com.apk.claw.android.utils.ScreenMemory;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class GetScreenInfoTool extends BaseTool {
 
@@ -46,16 +49,64 @@ public class GetScreenInfoTool extends BaseTool {
      */
     public static boolean useFullTree = false;
 
+    private static final Pattern ELEMENT_PATTERN = Pattern.compile(
+            "\\[(\\w+)\\] (?:text|desc)=\"([^\"]+)\".*?bounds=\\[(\\d+),(\\d+)\\]\\[(\\d+),(\\d+)\\]");
+
     @Override
     public ToolResult execute(Map<String, Object> params) {
         ClawAccessibilityService service = ClawAccessibilityService.getInstance();
         if (service == null) {
             return ToolResult.error("Accessibility service is not running");
         }
-        String tree = useFullTree ? service.getScreenTreeFull() : service.getScreenTree();
+        String tree;
+        if (useFullTree) {
+            tree = service.getScreenTreeFull();
+        } else {
+            tree = service.getScreenTreeSmart();
+        }
         if (tree == null) {
             return ToolResult.error(SYSTEM_DIALOG_BLOCKED);
         }
-        return ToolResult.success(tree);
+
+        // --- Long-term memory integration ---
+        StringBuilder output = new StringBuilder();
+
+        // Prepend known element positions for the current foreground app
+        String fgPkg = service.getForegroundPackage();
+        if (fgPkg != null && !fgPkg.isEmpty()) {
+            String hints = ScreenMemory.recallHints(fgPkg);
+            if (!hints.isEmpty()) {
+                output.append(hints).append("\n\n");
+            }
+
+            // Auto-record: save key elements from this screen to memory
+            autoRecord(fgPkg, tree);
+        }
+
+        output.append(tree);
+        return ToolResult.success(output.toString());
+    }
+
+    /**
+     * Extracts clickable / labelled elements from the screen tree and saves
+     * them to ScreenMemory so future tasks can skip the initial scan.
+     */
+    private void autoRecord(String packageName, String tree) {
+        if (tree == null || tree.length() < 10) return;
+        Matcher m = ELEMENT_PATTERN.matcher(tree);
+        int count = 0;
+        while (m.find() && count < 15) {
+            String klass = m.group(1);
+            String text = m.group(2);
+            if (text.isEmpty()) continue;
+            String bounds = "[" + m.group(3) + "," + m.group(4) + "][" + m.group(5) + "," + m.group(6) + "]";
+            // Determine clickable from context — the pattern captures the element line
+            String line = m.group(0);
+            boolean clickable = line.contains("[clickable]");
+
+            ScreenMemory.record(packageName, text, bounds, klass, clickable,
+                    clickable ? "" : "tap parent container");
+            count++;
+        }
     }
 }

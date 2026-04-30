@@ -196,6 +196,7 @@
     <string name="tool_name_send_file">Send File</string>
     <string name="tool_name_wait">Wait</string>
     <string name="tool_name_get_screen_info">Get Screen Info</string>
+    <string name="tool_name_remember">Remember</string>
     <string name="tool_name_finish">Finish Task</string>
     <string name="tool_name_open_app">Open App</string>
     <string name="tool_name_get_installed_apps">Get Installed Apps</string>
