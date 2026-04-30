@@ -37,6 +37,7 @@ object ToolRegistry {
         register(RepeatActionsTool())
         register(ClipboardTool())
         register(SendFileTool())
+        register(RememberTool())
         register(FinishTool())
     }
 
