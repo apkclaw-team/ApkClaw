@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/bg_session_page">
+
+    <com.apk.claw.android.widget.CommonToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/bg_session_panel"
+        android:orientation="vertical"
+        android:padding="14dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="3">
+
+            <com.apk.claw.android.widget.KButton
+                android:id="@+id/btnEditSummary"
+                android:layout_width="0dp"
+                android:layout_height="44dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:text="@string/session_memory_condensed_summary_short"
+                android:textSize="12sp"
+                app:btnBackground="@color/colorBrandContainer"
+                app:btnBorderColor="@color/colorBrandVariant"
+                app:btnTextColor="@color/colorBrandOnContainer" />
+
+            <com.apk.claw.android.widget.KButton
+                android:id="@+id/btnEditHabits"
+                android:layout_width="0dp"
+                android:layout_height="44dp"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:text="@string/session_memory_habit_notes_short"
+                android:textSize="12sp"
+                app:btnBackground="@color/colorInfoContainer"
+                app:btnBorderColor="@color/colorInfoPrimary"
+                app:btnTextColor="@color/colorInfoOnContainer" />
+
+            <com.apk.claw.android.widget.KButton
+                android:id="@+id/btnEditPrompt"
+                android:layout_width="0dp"
+                android:layout_height="44dp"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:text="@string/session_memory_session_prompt_short"
+                android:textSize="12sp"
+                app:btnBackground="@color/colorWarningContainer"
+                app:btnBorderColor="@color/colorWarningPrimary"
+                app:btnTextColor="@color/colorWarningOnContainer" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvChatStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:textColor="#667085"
+            android:textSize="13sp" />
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/bg_session_message_list"
+        android:padding="8dp">
+
+        <ListView
+            android:id="@+id/listMessages"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="@android:color/transparent"
+            android:dividerHeight="8dp"
+            android:paddingStart="8dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="8dp"
+            android:paddingBottom="8dp"
+            android:stackFromBottom="false"
+            android:transcriptMode="normal" />
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/bg_session_panel"
+        android:orientation="vertical"
+        android:padding="12dp">
+
+        <EditText
+            android:id="@+id/etChatInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_session_input"
+            android:gravity="top|start"
+            android:hint="@string/session_memory_chat_input_hint"
+            android:maxLines="4"
+            android:minHeight="52dp"
+            android:padding="14dp"
+            android:textColor="@color/colorTextPrimary"
+            android:textColorHint="@color/colorTextTertiary" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layoutDirection="ltr"
+            android:orientation="horizontal"
+            android:weightSum="2">
+
+            <com.apk.claw.android.widget.KButton
+                android:id="@+id/btnCancelChatTask"
+                android:layout_width="0dp"
+                android:layout_height="46dp"
+                android:layout_weight="1"
+                android:text="@string/session_memory_stop"
+                app:btnBackground="@color/colorErrorContainer"
+                app:btnBorderColor="@color/colorErrorPrimary"
+                app:btnTextColor="@color/colorErrorOnContainer" />
+
+            <com.apk.claw.android.widget.KButton
+                android:id="@+id/btnSendChatMessage"
+                android:layout_width="0dp"
+                android:layout_height="46dp"
+                android:layout_marginStart="10dp"
+                android:layout_weight="1"
+                android:text="@string/session_memory_send" />
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

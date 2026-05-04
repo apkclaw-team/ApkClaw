@@ -10,7 +10,9 @@ import android.os.Build
 import android.Manifest
 import android.os.Environment
 import android.widget.Toast
+import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
+import com.apk.claw.android.BuildConfig
 import com.apk.claw.android.service.ForegroundService
 import androidx.core.content.ContextCompat
 import android.view.View
@@ -41,6 +43,7 @@ class HomeActivity : BaseActivity() {
     private lateinit var cardBattery: PermissionCardView
     private lateinit var cardStorage: PermissionCardView
     private lateinit var btnCancelTask: KButton
+    private lateinit var tvVersion: TextView
 
     private val handler = Handler(Looper.getMainLooper())
     private val checkRunnable = object : Runnable {
@@ -132,6 +135,9 @@ class HomeActivity : BaseActivity() {
             }
             updateCancelTaskVisibility()
         }
+
+        tvVersion = findViewById(R.id.tvVersion)
+        tvVersion.text = getString(R.string.home_version, BuildConfig.VERSION_NAME)
 
         // 点击卡片申请权限
         cardAccessibility.setOnClickListener { requestAccessibilityPermission() }

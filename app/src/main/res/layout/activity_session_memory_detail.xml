@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBgSecondary"
+    android:orientation="vertical">
+
+    <com.apk.claw.android.widget.CommonToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="56pt" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingHorizontal="16pt"
+        android:paddingTop="16pt">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/session_memory_detail_tip"
+                android:textColor="@color/colorTextSecondary"
+                android:textSize="14pt" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20pt"
+                android:paddingHorizontal="4pt"
+                android:paddingBottom="8pt"
+                android:text="@string/session_memory_edit_session_name"
+                android:textColor="@color/colorTextPrimary"
+                android:textSize="14pt"
+                android:textStyle="bold" />
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="@color/colorContainerBrighten"
+                app:cardCornerRadius="12pt"
+                app:cardElevation="1pt">
+
+                <EditText
+                    android:id="@+id/etSelectedSessionName"
+                    android:layout_width="match_parent"
+                    android:layout_height="48pt"
+                    android:background="@null"
+                    android:hint="@string/session_memory_edit_session_name_hint"
+                    android:inputType="text"
+                    android:maxLines="1"
+                    android:paddingHorizontal="16pt"
+                    android:singleLine="true"
+                    android:textColor="@color/colorTextPrimary"
+                    android:textColorHint="@color/colorTextTertiary"
+                    android:textSize="15pt" />
+            </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16pt"
+                android:paddingHorizontal="4pt"
+                android:paddingBottom="8pt"
+                android:text="@string/session_memory_session_preview"
+                android:textColor="@color/colorTextPrimary"
+                android:textSize="14pt"
+                android:textStyle="bold" />
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="180pt"
+                app:cardBackgroundColor="@color/colorContainerBrighten"
+                app:cardCornerRadius="12pt"
+                app:cardElevation="1pt">
+
+                <ScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:fillViewport="true">
+
+                    <TextView
+                        android:id="@+id/tvTranscriptPreview"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="16pt"
+                        android:textColor="@color/colorTextPrimary"
+                        android:textSize="14pt" />
+                </ScrollView>
+            </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16pt"
+                android:paddingHorizontal="4pt"
+                android:paddingBottom="8pt"
+                android:text="@string/session_memory_session_transcript"
+                android:textColor="@color/colorTextPrimary"
+                android:textSize="14pt"
+                android:textStyle="bold" />
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="180pt"
+                app:cardBackgroundColor="@color/colorContainerBrighten"
+                app:cardCornerRadius="12pt"
+                app:cardElevation="1pt">
+
+                <EditText
+                    android:id="@+id/etSessionTranscript"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@null"
+                    android:gravity="top|start"
+                    android:hint="@string/session_memory_session_transcript_hint"
+                    android:inputType="textMultiLine"
+                    android:padding="16pt"
+                    android:scrollbars="vertical"
+                    android:textColor="@color/colorTextPrimary"
+                    android:textColorHint="@color/colorTextTertiary"
+                    android:textSize="14pt" />
+            </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16pt"
+                android:paddingHorizontal="4pt"
+                android:paddingBottom="8pt"
+                android:text="@string/session_memory_condensed_summary"
+                android:textColor="@color/colorTextPrimary"
+                android:textSize="14pt"
+                android:textStyle="bold" />
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="120pt"
+                app:cardBackgroundColor="@color/colorContainerBrighten"
+                app:cardCornerRadius="12pt"
+                app:cardElevation="1pt">
+
+                <EditText
+                    android:id="@+id/etCondensedSummary"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@null"
+                    android:gravity="top|start"
+                    android:hint="@string/session_memory_condensed_summary_hint"
+                    android:inputType="textMultiLine"
+                    android:padding="16pt"
+                    android:scrollbars="vertical"
+                    android:textColor="@color/colorTextPrimary"
+                    android:textColorHint="@color/colorTextTertiary"
+                    android:textSize="14pt" />
+            </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16pt"
+                android:paddingHorizontal="4pt"
+                android:paddingBottom="8pt"
+                android:text="@string/session_memory_habit_notes"
+                android:textColor="@color/colorTextPrimary"
+                android:textSize="14pt"
+                android:textStyle="bold" />
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="120pt"
+                app:cardBackgroundColor="@color/colorContainerBrighten"
+                app:cardCornerRadius="12pt"
+                app:cardElevation="1pt">
+
+                <EditText
+                    android:id="@+id/etHabitNotes"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@null"
+                    android:gravity="top|start"
+                    android:hint="@string/session_memory_habit_notes_hint"
+                    android:inputType="textMultiLine"
+                    android:padding="16pt"
+                    android:scrollbars="vertical"
+                    android:textColor="@color/colorTextPrimary"
+                    android:textColorHint="@color/colorTextTertiary"
+                    android:textSize="14pt" />
+            </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16pt"
+                android:paddingHorizontal="4pt"
+                android:paddingBottom="8pt"
+                android:text="@string/session_memory_error_lessons"
+                android:textColor="@color/colorTextPrimary"
+                android:textSize="14pt"
+                android:textStyle="bold" />
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="120pt"
+                app:cardBackgroundColor="@color/colorContainerBrighten"
+                app:cardCornerRadius="12pt"
+                app:cardElevation="1pt">
+
+                <EditText
+                    android:id="@+id/etErrorLessons"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@null"
+                    android:gravity="top|start"
+                    android:hint="@string/session_memory_error_lessons_hint"
+                    android:inputType="textMultiLine"
+                    android:padding="16pt"
+                    android:scrollbars="vertical"
+                    android:textColor="@color/colorTextPrimary"
+                    android:textColorHint="@color/colorTextTertiary"
+                    android:textSize="14pt" />
+            </androidx.cardview.widget.CardView>
+
+            <com.apk.claw.android.widget.KButton
+                android:id="@+id/btnSaveSessionMemory"
+                android:layout_width="match_parent"
+                android:layout_height="48pt"
+                android:layout_marginTop="24pt"
+                android:layout_marginBottom="24pt"
+                android:text="@string/common_save"
+                android:textSize="16pt" />
+
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

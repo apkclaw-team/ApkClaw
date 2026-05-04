@@ -8,15 +8,11 @@ import com.apk.claw.android.channel.Channel
 import com.apk.claw.android.channel.ChannelManager
 import com.apk.claw.android.floating.FloatingCircleManager
 import com.apk.claw.android.service.ClawAccessibilityService
+import com.apk.claw.android.session.SessionMemoryManager
 import com.apk.claw.android.tool.ToolResult
 import com.apk.claw.android.utils.XLog
+import java.util.UUID
 
-/**
- * 任务编排器，负责 Agent 生命周期管理、任务锁、任务执行与回调处理。
- *
- * @param agentConfigProvider 延迟获取最新 AgentConfig 的回调
- * @param onTaskFinished 每次任务结束（成功/失败/取消）后的通知，用于刷新用户信息等
- */
 class TaskOrchestrator(
     private val agentConfigProvider: () -> AgentConfig,
     private val onTaskFinished: () -> Unit
@@ -26,17 +22,67 @@ class TaskOrchestrator(
         private const val TAG = "TaskOrchestrator"
     }
 
-    private lateinit var agentService: AgentService
+    enum class LocalMessageResult {
+        STARTED,
+        QUEUED,
+        CANCELLED,
+        BUSY_OTHER_SESSION,
+        SERVICE_UNAVAILABLE,
+        EMPTY
+    }
 
+    private data class RunningTaskRecord(
+        val task: String,
+        val sessionId: String
+    )
+
+    private interface TaskOutput {
+        val channel: Channel?
+        fun sendText(content: String)
+        fun flush()
+        fun sendImage(imageBytes: ByteArray) {}
+    }
+
+    private class ChannelTaskOutput(
+        override val channel: Channel,
+        private val messageId: String
+    ) : TaskOutput {
+        override fun sendText(content: String) {
+            ChannelManager.sendMessage(channel, content, messageId)
+        }
+
+        override fun flush() {
+            ChannelManager.flushMessages(channel)
+        }
+
+        override fun sendImage(imageBytes: ByteArray) {
+            ChannelManager.sendImage(channel, imageBytes, messageId)
+        }
+    }
+
+    private object LocalTaskOutput : TaskOutput {
+        override val channel: Channel? = null
+        override fun sendText(content: String) = Unit
+        override fun flush() = Unit
+    }
+
+    private lateinit var agentService: AgentService
     private val taskLock = Any()
+    private val runningTaskRecordLock = Any()
+
     @Volatile
     var inProgressTaskMessageId: String = ""
         private set
+
     @Volatile
     var inProgressTaskChannel: Channel? = null
         private set
 
-    // ==================== Agent 生命周期 ====================
+    @Volatile
+    private var runningTaskRecord: RunningTaskRecord? = null
+
+    @Volatile
+    private var manualCancellationHandled = false
 
     fun initAgent() {
         agentService = AgentServiceFactory.create()
@@ -66,12 +112,15 @@ class TaskOrchestrator(
         }
     }
 
-    // ==================== 任务锁 ====================
-
-    /**
-     * 原子地尝试获取任务锁。如果当前无任务在执行，则标记为占用并返回 true；否则返回 false。
-     */
     fun tryAcquireTask(messageId: String, channel: Channel): Boolean {
+        return acquireTask(messageId, channel)
+    }
+
+    private fun tryAcquireLocalTask(): Boolean {
+        return acquireTask("local-${UUID.randomUUID().toString().substring(0, 8)}", null)
+    }
+
+    private fun acquireTask(messageId: String, channel: Channel?): Boolean {
         synchronized(taskLock) {
             if (inProgressTaskMessageId.isNotEmpty()) return false
             inProgressTaskMessageId = messageId
@@ -80,9 +129,6 @@ class TaskOrchestrator(
         }
     }
 
-    /**
-     * 释放任务锁，返回释放前的 (channel, messageId) 供调用方使用。
-     */
     private fun releaseTask(): Pair<Channel?, String> {
         synchronized(taskLock) {
             val ch = inProgressTaskChannel
@@ -99,13 +145,31 @@ class TaskOrchestrator(
         }
     }
 
-    // ==================== 任务执行 ====================
+    fun getRunningSessionId(): String? {
+        synchronized(runningTaskRecordLock) {
+            return runningTaskRecord?.sessionId
+        }
+    }
+
+    fun isTaskPaused(): Boolean {
+        return ::agentService.isInitialized && agentService.isPaused()
+    }
 
     fun cancelCurrentTask() {
         if (!isTaskRunning()) return
+        manualCancellationHandled = true
+
+        val record = synchronized(runningTaskRecordLock) { runningTaskRecord }
+        if (record != null) {
+            SessionMemoryManager.appendSessionMessage(record.sessionId, SessionMemoryManager.ROLE_SYSTEM, "任务已取消：用户手动停止任务")
+            SessionMemoryManager.recordCancellation(record.sessionId, record.task, "用户手动停止任务", "")
+        }
+
         if (::agentService.isInitialized) {
             agentService.cancel()
         }
+        clearRunningTaskRecord()
+
         val (channel, messageId) = releaseTask()
         if (channel != null && messageId.isNotEmpty()) {
             ChannelManager.sendMessage(channel, ClawApplication.instance.getString(R.string.channel_msg_task_cancelled), messageId)
@@ -115,7 +179,121 @@ class TaskOrchestrator(
         XLog.d(TAG, "Current task cancelled by user")
     }
 
+    fun pauseCurrentTask(): Boolean {
+        if (!isTaskRunning() || !::agentService.isInitialized) return false
+        return agentService.pause()
+    }
+
+    fun resumeCurrentTask(): Boolean {
+        if (!isTaskRunning() || !::agentService.isInitialized) return false
+        return agentService.resume()
+    }
+
+    fun submitFloatingFollowUp(message: String): Boolean {
+        if (!isTaskRunning() || !::agentService.isInitialized || !agentService.isRunning()) return false
+        val normalized = message.trim()
+        val sessionId = getRunningSessionId() ?: return false
+        if (normalized.isNotBlank()) {
+            val accepted = agentService.enqueueUserInstruction(normalized)
+            if (!accepted) return false
+            SessionMemoryManager.appendSessionMessage(sessionId, SessionMemoryManager.ROLE_USER, normalized)
+        }
+        return agentService.resume()
+    }
+
+    fun enqueueOrHandleRunningTaskMessage(channel: Channel, message: String, messageId: String): Boolean {
+        if (!isTaskRunning()) return false
+
+        val normalized = message.trim()
+        if (normalized.isEmpty()) return true
+
+        if (isStopCommand(normalized)) {
+            cancelCurrentTask()
+            ChannelManager.sendMessage(channel, ClawApplication.instance.getString(R.string.channel_msg_task_cancelled_by_followup), messageId)
+            ChannelManager.flushMessages(channel)
+            return true
+        }
+
+        if (!::agentService.isInitialized || !agentService.isRunning()) {
+            ChannelManager.sendMessage(channel, ClawApplication.instance.getString(R.string.channel_msg_task_in_progress), messageId)
+            ChannelManager.flushMessages(channel)
+            return true
+        }
+
+        val accepted = agentService.enqueueUserInstruction(normalized)
+        if (accepted) {
+            getRunningSessionId()?.let { sessionId ->
+                SessionMemoryManager.appendSessionMessage(sessionId, SessionMemoryManager.ROLE_USER, normalized)
+            }
+        }
+        val replyRes = if (accepted) R.string.channel_msg_followup_queued else R.string.channel_msg_followup_queue_failed
+        ChannelManager.sendMessage(channel, ClawApplication.instance.getString(replyRes), messageId)
+        ChannelManager.flushMessages(channel)
+        return true
+    }
+
+    fun sendLocalSessionMessage(sessionId: String, message: String): LocalMessageResult {
+        val normalized = message.trim()
+        if (normalized.isEmpty()) return LocalMessageResult.EMPTY
+
+        SessionMemoryManager.setCurrentSession(sessionId)
+
+        if (isTaskRunning()) {
+            val runningSessionId = getRunningSessionId()
+            if (runningSessionId != sessionId) {
+                return LocalMessageResult.BUSY_OTHER_SESSION
+            }
+            if (isStopCommand(normalized)) {
+                cancelCurrentTask()
+                return LocalMessageResult.CANCELLED
+            }
+            if (!::agentService.isInitialized || !agentService.isRunning()) {
+                return LocalMessageResult.SERVICE_UNAVAILABLE
+            }
+            val accepted = agentService.enqueueUserInstruction(normalized)
+            if (accepted) {
+                SessionMemoryManager.appendSessionMessage(sessionId, SessionMemoryManager.ROLE_USER, normalized)
+                return LocalMessageResult.QUEUED
+            }
+            return LocalMessageResult.SERVICE_UNAVAILABLE
+        }
+
+        if (!tryAcquireLocalTask()) {
+            return LocalMessageResult.BUSY_OTHER_SESSION
+        }
+        startTask(sessionId, normalized, LocalTaskOutput, onServiceNotReady = {
+            releaseTask()
+        })
+        return LocalMessageResult.STARTED
+    }
+
+    private fun isStopCommand(message: String): Boolean {
+        val normalized = message.trim().lowercase()
+        return normalized in setOf(
+            "停止", "停止任务", "取消", "取消任务", "结束任务",
+            "stop", "stop task", "cancel", "cancel task"
+        )
+    }
+
     fun startNewTask(channel: Channel, task: String, messageID: String) {
+        val sessionId = SessionMemoryManager.getCurrentSessionId()
+        startTask(
+            sessionId = sessionId,
+            task = task,
+            output = ChannelTaskOutput(channel, messageID),
+            onServiceNotReady = {
+                releaseTask()
+                ChannelManager.sendMessage(channel, ClawApplication.instance.getString(R.string.channel_msg_service_not_ready), messageID)
+            }
+        )
+    }
+
+    private fun startTask(
+        sessionId: String,
+        task: String,
+        output: TaskOutput,
+        onServiceNotReady: () -> Unit
+    ) {
         if (!::agentService.isInitialized) {
             XLog.e(TAG, "AgentService not initialized, attempting to initialize")
             try {
@@ -123,31 +301,36 @@ class TaskOrchestrator(
                 agentService.initialize(agentConfigProvider())
             } catch (e: Exception) {
                 XLog.e(TAG, "Failed to initialize AgentService", e)
-                releaseTask()
-                ChannelManager.sendMessage(channel, ClawApplication.instance.getString(R.string.channel_msg_service_not_ready), messageID)
+                onServiceNotReady()
                 return
             }
         }
 
         ClawAccessibilityService.getInstance()?.pressHome()
 
-        FloatingCircleManager.showTaskNotify(task, channel)
+        FloatingCircleManager.showTaskNotify(task, output.channel)
+        SessionMemoryManager.setCurrentSession(sessionId)
+        SessionMemoryManager.appendSessionMessage(sessionId, SessionMemoryManager.ROLE_USER, task)
+        beginRunningTaskRecord(task, sessionId)
+        manualCancellationHandled = false
 
-        // 每轮消息聚合缓冲：thinking + toolResult 攒成一条，减少发送次数
+        val effectiveTask = SessionMemoryManager.buildTaskPrompt(sessionId, task)
+        var finishSummary = ""
         val roundBuffer = StringBuilder()
 
         fun flushRoundBuffer() {
             if (roundBuffer.isNotEmpty()) {
-                ChannelManager.sendMessage(channel, roundBuffer.toString().trim(), messageID)
+                val chunk = roundBuffer.toString().trim()
+                output.sendText(chunk)
+                SessionMemoryManager.appendSessionMessage(sessionId, SessionMemoryManager.ROLE_ASSISTANT, chunk)
                 roundBuffer.clear()
             }
         }
 
-        agentService.executeTask(task, object : AgentCallback {
+        agentService.executeTask(effectiveTask, object : AgentCallback {
             override fun onLoopStart(round: Int) {
-                // 新一轮开始前，flush 上一轮积攒的消息
                 flushRoundBuffer()
-                FloatingCircleManager.setRunningState(round, channel)
+                FloatingCircleManager.setRunningState(round, output.channel)
             }
 
             override fun onContent(round: Int, content: String) {
@@ -172,42 +355,65 @@ class TaskOrchestrator(
                 }
                 XLog.e(TAG, "onToolResult: $toolName, $status $data")
                 if (toolId == "finish" && (result.data?.isNotEmpty() ?: false)) {
-                    // finish 的结果单独发，不合并（这是最终回复）
+                    finishSummary = result.data ?: ""
                     flushRoundBuffer()
-                    ChannelManager.sendMessage(channel, result.data, messageID)
+                    output.sendText(result.data ?: "")
                 } else {
-                    // 追加到本轮缓冲
                     if (roundBuffer.isNotEmpty()) roundBuffer.append("\n")
-                    roundBuffer.append(
-                        app.getString(R.string.channel_msg_tool_execution, toolName + parameters, status)
-                    )
+                    roundBuffer.append(app.getString(R.string.channel_msg_tool_execution, toolName + parameters, status))
                 }
             }
 
             override fun onComplete(round: Int, finalAnswer: String, totalTokens: Int) {
+                if (manualCancellationHandled) {
+                    XLog.i(TAG, "Ignore onComplete after manual cancellation")
+                    return
+                }
                 XLog.i(TAG, "onComplete: 轮数=$round, totalTokens=$totalTokens, answer=$finalAnswer")
+                val completionText = finishSummary.ifBlank { finalAnswer }
                 flushRoundBuffer()
+                if (completionText.isNotBlank()) {
+                    SessionMemoryManager.appendSessionMessage(sessionId, SessionMemoryManager.ROLE_ASSISTANT, completionText)
+                }
+                SessionMemoryManager.recordSuccess(sessionId, task, "", completionText)
+                clearRunningTaskRecord()
                 releaseTask()
-                ChannelManager.flushMessages(channel)
+                output.flush()
                 FloatingCircleManager.setSuccessState()
                 onTaskFinished()
             }
 
             override fun onError(round: Int, error: Exception, totalTokens: Int) {
+                if (manualCancellationHandled) {
+                    XLog.i(TAG, "Ignore onError after manual cancellation")
+                    return
+                }
                 XLog.e(TAG, "onError: ${error.message}, totalTokens=$totalTokens", error)
                 flushRoundBuffer()
+                val message = error.message ?: "未知错误"
+                SessionMemoryManager.appendSessionMessage(sessionId, SessionMemoryManager.ROLE_SYSTEM, "任务错误：$message")
+                SessionMemoryManager.recordFailure(sessionId, task, message, "")
+                clearRunningTaskRecord()
                 releaseTask()
-                ChannelManager.sendMessage(channel, ClawApplication.instance.getString(R.string.channel_msg_task_error, error.message), messageID)
-                ChannelManager.flushMessages(channel)
+                output.sendText(ClawApplication.instance.getString(R.string.channel_msg_task_error, error.message))
+                output.flush()
                 FloatingCircleManager.setErrorState()
                 onTaskFinished()
             }
 
             override fun onSystemDialogBlocked(round: Int, totalTokens: Int) {
+                if (manualCancellationHandled) {
+                    XLog.i(TAG, "Ignore onSystemDialogBlocked after manual cancellation")
+                    return
+                }
                 XLog.w(TAG, "onSystemDialogBlocked: round=$round, totalTokens=$totalTokens")
+                val blockedMsg = ClawApplication.instance.getString(R.string.channel_msg_system_dialog_blocked)
                 flushRoundBuffer()
+                SessionMemoryManager.appendSessionMessage(sessionId, SessionMemoryManager.ROLE_SYSTEM, blockedMsg)
+                SessionMemoryManager.recordFailure(sessionId, task, blockedMsg, "")
+                clearRunningTaskRecord()
                 releaseTask()
-                ChannelManager.sendMessage(channel, ClawApplication.instance.getString(R.string.channel_msg_system_dialog_blocked), messageID)
+                output.sendText(blockedMsg)
                 try {
                     val service = ClawAccessibilityService.getInstance()
                     val bitmap = service?.takeScreenshot(5000)
@@ -215,14 +421,27 @@ class TaskOrchestrator(
                         val stream = java.io.ByteArrayOutputStream()
                         bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 80, stream)
                         bitmap.recycle()
-                        ChannelManager.sendImage(channel, stream.toByteArray(), messageID)
+                        output.sendImage(stream.toByteArray())
                     }
                 } catch (e: Exception) {
                     XLog.e(TAG, "Failed to send screenshot for system dialog", e)
                 }
+                output.flush()
                 FloatingCircleManager.setErrorState()
                 onTaskFinished()
             }
         })
+    }
+
+    private fun beginRunningTaskRecord(task: String, sessionId: String) {
+        synchronized(runningTaskRecordLock) {
+            runningTaskRecord = RunningTaskRecord(task = task, sessionId = sessionId)
+        }
+    }
+
+    private fun clearRunningTaskRecord() {
+        synchronized(runningTaskRecordLock) {
+            runningTaskRecord = null
+        }
     }
 }

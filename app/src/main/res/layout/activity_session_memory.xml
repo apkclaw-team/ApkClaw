@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_session_page"
+    android:orientation="vertical">
+
+    <com.apk.claw.android.widget.CommonToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/bg_session_panel"
+        android:orientation="vertical"
+        android:padding="18dp">
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/switchEnableSession"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_session_input"
+            android:minHeight="56dp"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp"
+            android:text="@string/session_memory_enable_session"
+            android:textColor="@color/colorTextPrimary"
+            android:textSize="15sp"
+            app:thumbTint="@color/session_switch_thumb"
+            app:trackTint="@color/session_switch_track" />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/switchEnableMemory"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/bg_session_input"
+            android:minHeight="56dp"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp"
+            android:text="@string/session_memory_enable_memory"
+            android:textColor="@color/colorTextPrimary"
+            android:textSize="15sp"
+            app:thumbTint="@color/session_switch_thumb"
+            app:trackTint="@color/session_switch_track" />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/switchEnableGlobalPrompt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/bg_session_input"
+            android:minHeight="56dp"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp"
+            android:text="@string/session_memory_enable_global_prompt"
+            android:textColor="@color/colorTextPrimary"
+            android:textSize="15sp"
+            app:thumbTint="@color/session_switch_thumb"
+            app:trackTint="@color/session_switch_track" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:orientation="horizontal"
+            android:weightSum="2">
+
+            <com.apk.claw.android.widget.KButton
+                android:id="@+id/btnGlobalMemory"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:text="@string/session_memory_global_memory"
+                android:textSize="12sp"
+                app:btnBackground="@color/colorBrandContainer"
+                app:btnBorderColor="@color/colorBrandVariant"
+                app:btnTextColor="@color/colorBrandOnContainer" />
+
+            <com.apk.claw.android.widget.KButton
+                android:id="@+id/btnGlobalPrompt"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="10dp"
+                android:layout_weight="1"
+                android:text="@string/session_memory_global_prompt"
+                android:textSize="12sp"
+                app:btnBackground="@color/colorInfoContainer"
+                app:btnBorderColor="@color/colorInfoPrimary"
+                app:btnTextColor="@color/colorInfoOnContainer" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/session_memory_new_session"
+            android:textColor="@color/colorTextPrimary"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/etNewSessionName"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_session_input"
+                android:hint="@string/session_memory_new_session_hint"
+                android:maxLines="1"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:textColor="@color/colorTextPrimary"
+                android:textColorHint="@color/colorTextTertiary" />
+
+            <com.apk.claw.android.widget.KButton
+                android:id="@+id/btnCreateSession"
+                android:layout_width="96dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="10dp"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:text="@string/session_memory_create_session"
+                android:textSize="12sp"
+                app:btnCornerRadius="16dp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/listSessions"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="12dp"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="0dp"
+        android:paddingBottom="10dp"
+        android:clipToPadding="false" />
+
+    <TextView
+        android:id="@+id/tvEmptySessions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="32dp"
+        android:text="@string/session_memory_empty_sessions"
+        android:textColor="#98A2B3"
+        android:textSize="14sp"
+        android:visibility="gone" />
+
+</LinearLayout>

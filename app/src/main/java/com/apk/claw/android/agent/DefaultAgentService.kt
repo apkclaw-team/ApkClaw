@@ -25,6 +25,7 @@ import dev.langchain4j.data.message.UserMessage
 import dev.langchain4j.agent.tool.ToolExecutionRequest
 import java.io.File
 import java.util.LinkedList
+import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
@@ -53,6 +54,9 @@ class DefaultAgentService : AgentService {
     private var executor: ExecutorService? = null
     private val running = AtomicBoolean(false)
     private val cancelled = AtomicBoolean(false)
+    private val paused = AtomicBoolean(false)
+    private val pendingUserInstructions = ConcurrentLinkedQueue<String>()
+    private val pauseMonitor = Object()
 
     override fun initialize(config: AgentConfig) {
         this.config = config
@@ -80,6 +84,8 @@ class DefaultAgentService : AgentService {
 
         running.set(true)
         cancelled.set(false)
+        paused.set(false)
+        pendingUserInstructions.clear()
 
         executor?.submit {
             try {
@@ -91,6 +97,29 @@ class DefaultAgentService : AgentService {
                 running.set(false)
             }
         }
+    }
+
+    override fun enqueueUserInstruction(message: String): Boolean {
+        if (!running.get()) return false
+        val normalized = message.trim()
+        if (normalized.isEmpty()) return false
+        pendingUserInstructions.offer(normalized)
+        return true
+    }
+
+    override fun pause(): Boolean {
+        if (!running.get()) return false
+        paused.set(true)
+        return true
+    }
+
+    override fun resume(): Boolean {
+        if (!running.get()) return false
+        synchronized(pauseMonitor) {
+            paused.set(false)
+            pauseMonitor.notifyAll()
+        }
+        return true
     }
 
     // ==================== 环境预检 ====================
@@ -331,8 +360,12 @@ class DefaultAgentService : AgentService {
         var lastScreenHash = 0
 
         while (iterations < maxIterations && !cancelled.get()) {
+            waitIfPaused()
+            if (cancelled.get()) break
             iterations++
             callback.onLoopStart(iterations)
+
+            drainPendingUserInstructions(messages)
 
             // 发送前分级压缩历史消息，节省 token
             compressHistoryForSend(messages)
@@ -351,15 +384,11 @@ class DefaultAgentService : AgentService {
             llmResponse.tokenUsage?.totalTokenCount()?.let { totalTokens += it }
 
             // 将 AI 消息添加到历史（需要构造 AiMessage）
-            val aiMessage = if (llmResponse.hasToolExecutionRequests()) {
-                if (llmResponse.text.isNullOrEmpty()) {
-                    AiMessage.from(llmResponse.toolExecutionRequests)
-                } else {
-                    AiMessage.from(llmResponse.text, llmResponse.toolExecutionRequests)
-                }
-            } else {
-                AiMessage.from(llmResponse.text ?: "")
-            }
+            val aiMessage = AiMessage.builder()
+                .text(llmResponse.text)
+                .thinking(llmResponse.thinking)
+                .toolExecutionRequests(llmResponse.toolExecutionRequests)
+                .build()
             messages.add(aiMessage)
 
             // 非流式模式下推送思考内容
@@ -375,6 +404,7 @@ class DefaultAgentService : AgentService {
 
             // 执行工具调用
             for (toolRequest in llmResponse.toolExecutionRequests) {
+                waitIfPaused()
                 if (cancelled.get()) {
                     callback.onComplete(iterations, ClawApplication.instance.getString(R.string.agent_task_cancel), totalTokens)
                     return
@@ -452,6 +482,11 @@ class DefaultAgentService : AgentService {
 
     override fun cancel() {
         cancelled.set(true)
+        paused.set(false)
+        pendingUserInstructions.clear()
+        synchronized(pauseMonitor) {
+            pauseMonitor.notifyAll()
+        }
     }
 
     override fun shutdown() {
@@ -460,4 +495,40 @@ class DefaultAgentService : AgentService {
     }
 
     override fun isRunning(): Boolean = running.get()
+
+    override fun isPaused(): Boolean = paused.get()
+
+    private fun drainPendingUserInstructions(messages: MutableList<ChatMessage>) {
+        val pending = mutableListOf<String>()
+        while (true) {
+            val instruction = pendingUserInstructions.poll() ?: break
+            pending += instruction
+        }
+        if (pending.isEmpty()) return
+
+        val combined = buildString {
+            append("[补充指令] 用户在任务执行过程中追加了以下最新信息，请优先结合当前页面状态调整计划：\n")
+            pending.forEachIndexed { index, item ->
+                append(index + 1).append(". ").append(item).append("\n")
+            }
+            append("如果这些补充指令与之前计划冲突，以最新补充指令为准。")
+        }
+        messages.add(UserMessage.from(combined.trimEnd()))
+    }
+
+    private fun waitIfPaused() {
+        while (paused.get() && !cancelled.get()) {
+            try {
+                synchronized(pauseMonitor) {
+                    if (!paused.get() || cancelled.get()) {
+                        return
+                    }
+                    pauseMonitor.wait(250)
+                }
+            } catch (e: InterruptedException) {
+                Thread.currentThread().interrupt()
+                return
+            }
+        }
+    }
 }
