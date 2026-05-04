@@ -6,10 +6,13 @@ import android.os.Bundle
 import android.widget.AbsListView
 import android.os.Handler
 import android.os.Looper
+import android.view.View
 import android.widget.EditText
 import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import com.apk.claw.android.ClawApplication
 import com.apk.claw.android.R
 import com.apk.claw.android.TaskOrchestrator
@@ -45,8 +48,10 @@ class SessionChatActivity : BaseActivity() {
     private lateinit var btnEditSummary: KButton
     private lateinit var btnEditHabits: KButton
     private lateinit var btnEditPrompt: KButton
+    private lateinit var inputPanel: View
     private lateinit var adapter: SessionChatAdapter
     private lateinit var sessionId: String
+    private var inputPanelBasePaddingBottom: Int = 0
     private var lastMessageCount: Int = -1
     private var initialScrollDone: Boolean = false
     private var shouldAutoScroll: Boolean = true
@@ -68,6 +73,8 @@ class SessionChatActivity : BaseActivity() {
         btnEditSummary = findViewById(R.id.btnEditSummary)
         btnEditHabits = findViewById(R.id.btnEditHabits)
         btnEditPrompt = findViewById(R.id.btnEditPrompt)
+        inputPanel = findViewById(R.id.chatInputPanel)
+        inputPanelBasePaddingBottom = inputPanel.paddingBottom
         adapter = SessionChatAdapter(this)
         listMessages.adapter = adapter
         listMessages.setOnScrollListener(object : AbsListView.OnScrollListener {
@@ -96,6 +103,7 @@ class SessionChatActivity : BaseActivity() {
         btnEditSummary.setOnClickListener { openEditor(SessionMemoryManager.FIELD_CONDENSED_SUMMARY) }
         btnEditHabits.setOnClickListener { openEditor(SessionMemoryManager.FIELD_HABIT_NOTES) }
         btnEditPrompt.setOnClickListener { openEditor(SessionMemoryManager.FIELD_SESSION_PROMPT) }
+        setupKeyboardInsets()
 
         refreshUi(scrollToBottom = true)
     }
@@ -139,6 +147,21 @@ class SessionChatActivity : BaseActivity() {
 
     private fun openEditor(field: String) {
         startActivity(SessionMemoryTextEditorActivity.newIntent(this, sessionId, field))
+    }
+
+    private fun setupKeyboardInsets() {
+        ViewCompat.setOnApplyWindowInsetsListener(inputPanel) { view, insets ->
+            val imeBottom = insets.getInsets(WindowInsetsCompat.Type.ime()).bottom
+            val navBottom = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
+            val keyboardOverlap = (imeBottom - navBottom).coerceAtLeast(0)
+            view.setPadding(
+                view.paddingLeft,
+                view.paddingTop,
+                view.paddingRight,
+                inputPanelBasePaddingBottom + keyboardOverlap
+            )
+            insets
+        }
     }
 
     private fun refreshUi(scrollToBottom: Boolean) {
