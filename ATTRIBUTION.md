@@ -11,7 +11,7 @@ The original project provides the core Android automation concept, project struc
 The current repository adds or changes, among other things:
 
 - Windows debug build scripts
-- version `0.0.4`
+- version `0.0.5`
 - configurable max iterations
 - configurable wait timing
 - local session and memory management

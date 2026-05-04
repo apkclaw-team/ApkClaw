@@ -4,10 +4,10 @@ Use this checklist before publishing a GitHub release.
 
 ## Current Build
 
-- Version: `v0.0.4`
-- APK: `app/build/outputs/apk/debug/ApkClaw_v0.0.4_20260504_084846.apk`
-- SHA256: `DE087A0E9BADA6E3788C8B9F4CF1FF76894F5FF1F88BDAD910EF702C8AFBB1E9`
-- Size: `53,239,523` bytes
+- Version: `v0.0.5`
+- APK: `app/build/outputs/apk/debug/ApkClaw_v0.0.5_20260504_234845.apk`
+- SHA256: `D40A9193D43D17004B8AC9564D765681F909378F1D42DE96C71395417BA9F35C`
+- Size: `53,266,667` bytes
 
 ## Steps
 
@@ -18,7 +18,7 @@ Use this checklist before publishing a GitHub release.
    ```
 
 2. Confirm the generated APK filename contains the expected version.
-3. Create a GitHub Release named `v0.0.4`.
+3. Create a GitHub Release named `v0.0.5`.
 4. Upload the APK as a Release asset.
 5. Paste the SHA256 into the release notes.
 6. Mention that this is an unofficial derivative of `apkclaw-team/ApkClaw`.
@@ -38,7 +38,7 @@ Use this checklist before publishing a GitHub release.
 ## Suggested Release Notes
 
 ```markdown
-## ApkClaw Personal Enhanced Edition v0.0.4
+## ApkClaw Personal Enhanced Edition v0.0.5
 
 This is an unofficial derivative of apkclaw-team/ApkClaw.
 Original project: https://github.com/apkclaw-team/ApkClaw
@@ -54,8 +54,8 @@ Original project: https://github.com/apkclaw-team/ApkClaw
 
 ### APK
 
-File: ApkClaw_v0.0.4_20260504_084846.apk
-SHA256: DE087A0E9BADA6E3788C8B9F4CF1FF76894F5FF1F88BDAD910EF702C8AFBB1E9
+File: ApkClaw_v0.0.5_20260504_234845.apk
+SHA256: D40A9193D43D17004B8AC9564D765681F909378F1D42DE96C71395417BA9F35C
 
 ### Notes
 
