@@ -53,12 +53,19 @@ class AppViewModel : ViewModel() {
     fun getAgentConfig(): AgentConfig {
         var baseUrl = KVUtils.getLlmBaseUrl().trim()
         if (baseUrl.isEmpty()) baseUrl = "https://api.openai.com/v1"
+        val maxIterations = KVUtils.getAgentMaxIterations().coerceAtLeast(1)
+        val systemPrompt = AgentConfig.buildSystemPrompt(
+            clickWaitMs = KVUtils.getEffectiveTapWaitAfterMs(),
+            openAppWaitMs = KVUtils.getEffectiveOpenAppWaitAfterMs(),
+            inputWaitMs = KVUtils.getEffectiveInputWaitAfterMs()
+        )
         return AgentConfig.Builder()
             .apiKey(KVUtils.getLlmApiKey())
             .baseUrl(baseUrl)
             .modelName(KVUtils.getLlmModelName())
+            .systemPrompt(systemPrompt)
             .temperature(0.1)
-            .maxIterations(60)
+            .maxIterations(maxIterations)
             .build()
     }
 
@@ -115,11 +122,23 @@ class AppViewModel : ViewModel() {
             FloatingCircleManager.show(ClawApplication.instance)
             FloatingCircleManager.onFloatClick = {
                 XLog.d(TAG, "Floating circle clicked")
-                bringAppToForeground()
+                if (isTaskRunning() && pauseCurrentTask()) {
+                    showFloatingTaskInput()
+                } else {
+                    bringAppToForeground()
+                }
             }
         } catch (e: Exception) {
             XLog.e(TAG, "Failed to show floating circle: ${e.message}")
         }
+    }
+
+    private fun showFloatingTaskInput() {
+        FloatingCircleManager.showTaskInputPanel(
+            onResume = { resumeCurrentTask() },
+            onSendAndResume = { message -> submitFloatingFollowUp(message) },
+            onStop = { cancelCurrentTask() }
+        )
     }
 
     /**
@@ -137,10 +156,24 @@ class AppViewModel : ViewModel() {
 
     fun isTaskRunning(): Boolean = taskOrchestrator.isTaskRunning()
 
+    fun getRunningSessionId(): String? = taskOrchestrator.getRunningSessionId()
+
+    fun isTaskPaused(): Boolean = taskOrchestrator.isTaskPaused()
+
     fun cancelCurrentTask() = taskOrchestrator.cancelCurrentTask()
+
+    fun pauseCurrentTask(): Boolean = taskOrchestrator.pauseCurrentTask()
+
+    fun resumeCurrentTask(): Boolean = taskOrchestrator.resumeCurrentTask()
+
+    fun submitFloatingFollowUp(message: String): Boolean = taskOrchestrator.submitFloatingFollowUp(message)
 
     fun startNewTask(channel: Channel, task: String, messageID: String) =
         taskOrchestrator.startNewTask(channel, task, messageID)
+
+    fun sendLocalSessionMessage(sessionId: String, message: String): TaskOrchestrator.LocalMessageResult {
+        return taskOrchestrator.sendLocalSessionMessage(sessionId, message)
+    }
 
     private fun trySendScreenshot(channel: Channel, filePath: String, messageID: String) {
         try {

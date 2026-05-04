@@ -73,4 +73,15 @@
     <color name="colorInfoOnPrimary">#FFFFFFFF</color>
     <color name="colorInfoContainer">#FFEEF9FF</color>
     <color name="colorInfoOnContainer">#FF007BBE</color>
+
+    <!-- Session UI -->
+    <color name="colorSessionPageGradientStart">#FFF4F0FF</color>
+    <color name="colorSessionPageGradientCenter">#FFF8F7FB</color>
+    <color name="colorSessionPageGradientEnd">#FFEEF6FF</color>
+    <color name="colorSessionBubbleAssistant">#FFFFFFFF</color>
+    <color name="colorSessionBubbleAssistantBorder">#1A000000</color>
+    <color name="colorSessionBubbleUser">#FFDDEFFF</color>
+    <color name="colorSessionBubbleUserBorder">#1F1AAFFF</color>
+    <color name="colorSessionBubbleSystem">#FFF4F4F4</color>
+    <color name="colorSessionBubbleSystemBorder">#22000000</color>
 </resources>

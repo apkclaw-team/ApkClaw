@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/floatingInputBackdrop"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/transparent"
+    android:clickable="true"
+    android:focusable="true">
+
+    <LinearLayout
+        android:id="@+id/floatingInputPanel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginEnd="0dp"
+        android:layout_marginBottom="0dp"
+        android:background="@drawable/bg_session_panel"
+        android:clickable="true"
+        android:elevation="0dp"
+        android:focusable="true"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/floating_task_input_title"
+            android:textColor="@color/colorTextPrimary"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/etFloatingFollowUp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_session_input"
+            android:gravity="top|start"
+            android:hint="@string/floating_task_input_hint"
+            android:minHeight="88dp"
+            android:padding="14dp"
+            android:textColor="@color/colorTextPrimary"
+            android:textColorHint="@color/colorTextTertiary" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:orientation="horizontal"
+            android:weightSum="3">
+
+            <com.apk.claw.android.widget.KButton
+                android:id="@+id/btnFloatingResume"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:maxLines="1"
+                android:text="@string/floating_task_resume"
+                app:btnBackground="@color/colorContainerBase"
+                app:btnBorderColor="@color/colorBorderBase"
+                app:btnTextColor="@color/colorTextPrimary" />
+
+            <com.apk.claw.android.widget.KButton
+                android:id="@+id/btnFloatingStop"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="10dp"
+                android:layout_weight="1"
+                android:maxLines="1"
+                android:text="@string/session_memory_stop"
+                app:btnBackground="@color/colorErrorContainer"
+                app:btnBorderColor="@color/colorErrorPrimary"
+                app:btnTextColor="@color/colorErrorOnContainer" />
+
+            <com.apk.claw.android.widget.KButton
+                android:id="@+id/btnFloatingSend"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="10dp"
+                android:layout_weight="1"
+                android:maxLines="1"
+                android:text="@string/floating_task_send_and_resume" />
+        </LinearLayout>
+    </LinearLayout>
+
+</FrameLayout>

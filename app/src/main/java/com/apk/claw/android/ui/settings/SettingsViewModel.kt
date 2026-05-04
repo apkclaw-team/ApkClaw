@@ -8,6 +8,7 @@ import com.apk.claw.android.ClawApplication
 import com.apk.claw.android.R
 import com.apk.claw.android.channel.ChannelManager
 import com.apk.claw.android.server.ConfigServerManager
+import com.apk.claw.android.session.SessionMemoryManager
 import com.apk.claw.android.utils.KVUtils
 import com.apk.claw.android.widget.QRCodeDialog
 import com.apk.claw.android.utils.XLog
@@ -47,6 +48,8 @@ class SettingsViewModel : ViewModel() {
         val wechatBotToken = KVUtils.getWechatBotToken().isNotEmpty()
         val map = mapOf(
             MenuAction.LLM_CONFIG.name to SettingValue.Text(if (KVUtils.hasLlmConfig()) KVUtils.getLlmModelName() else ClawApplication.instance.getString(R.string.common_unconfigured)),
+            MenuAction.SESSION_MEMORY.name to SettingValue.Text(SessionMemoryManager.getStatusSummary()),
+            MenuAction.WAIT_TIMING.name to SettingValue.Text(ClawApplication.instance.getString(R.string.wait_timing_summary, KVUtils.getWaitScalePercent())),
             MenuAction.DINGDING.name to SettingValue.Text(ClawApplication.instance.getString(if (dingtalkAppKey && dingtalkAppSecret) R.string.common_bound else R.string.common_unbound)),
             MenuAction.FEISHU.name to SettingValue.Text(ClawApplication.instance.getString(if (feishuAppId && feishuAppSecret) R.string.common_bound else R.string.common_unbound)),
             MenuAction.QQ.name to SettingValue.Text(ClawApplication.instance.getString(if (qqAppId && qqAppSecret) R.string.common_bound else R.string.common_unbound)),
@@ -303,6 +306,8 @@ class SettingsViewModel : ViewModel() {
     enum class MenuAction {
         DINGDING, FEISHU, QQ, DISCORD, TELEGRAM, WECHAT,
         LAN_CONFIG,
-        LLM_CONFIG
+        LLM_CONFIG,
+        SESSION_MEMORY,
+        WAIT_TIMING
     }
 }

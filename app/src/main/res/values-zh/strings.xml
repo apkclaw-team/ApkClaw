@@ -128,6 +128,93 @@
     <string name="menu_telegram">Telegram</string>
     <string name="menu_wechat">微信</string>
     <string name="menu_lan_config">局域网配置</string>
+    <string name="menu_session_memory">会话与记忆</string>
+    <string name="menu_wait_timing">等待时间</string>
+
+    <string name="wait_timing_title">等待时间</string>
+    <string name="wait_timing_tip">在这里设置 AI 使用的 wait_after 推荐值。最前面的全局缩放因子会先作用到后面三个推荐等待时间上。</string>
+    <string name="wait_timing_scale_label">全局缩放因子（0% - 200%）</string>
+    <string name="wait_timing_scale_hint">100</string>
+    <string name="wait_timing_tap_label">点击后的推荐等待（毫秒）</string>
+    <string name="wait_timing_tap_hint">2000</string>
+    <string name="wait_timing_open_app_label">打开应用后的推荐等待（毫秒）</string>
+    <string name="wait_timing_open_app_hint">3000</string>
+    <string name="wait_timing_input_label">输入后的推荐等待（毫秒）</string>
+    <string name="wait_timing_input_hint">1000</string>
+    <string name="wait_timing_restore_defaults">恢复默认值</string>
+    <string name="wait_timing_saved">等待时间已保存</string>
+    <string name="wait_timing_restored">已恢复默认值</string>
+    <string name="wait_timing_invalid_scale">缩放因子只能在 0 到 200 之间</string>
+    <string name="wait_timing_invalid_wait">等待时间必须大于等于 0</string>
+    <string name="wait_timing_effective_summary">当前生效：点击 %1$dms，打开应用 %2$dms，输入 %3$dms</string>
+    <string name="wait_timing_history_note">提示：历史会话里旧的 wait_after、推荐等待和缩放说明不会再注入 AI，当前任务只使用这里保存后的最新等待配置。</string>
+    <string name="wait_timing_summary">%1$d%%</string>
+
+    <string name="session_memory_title">会话与记忆</string>
+    <string name="session_memory_tip"></string>
+    <string name="session_memory_enable_session">开启会话上下文</string>
+    <string name="session_memory_enable_memory">开启全局记忆</string>
+    <string name="session_memory_enable_global_prompt">开启全局提示词</string>
+    <string name="session_memory_current_session">当前会话</string>
+    <string name="session_memory_new_session">新建会话</string>
+    <string name="session_memory_new_session_hint">例如：微信日常运营</string>
+    <string name="session_memory_create_session">新建会话</string>
+    <string name="session_memory_open_chat">聊天</string>
+    <string name="session_memory_empty_sessions">暂无会话</string>
+    <string name="session_memory_updated_at">最近更新：%1$s</string>
+    <string name="session_memory_current_badge">当前</string>
+    <string name="session_memory_chat_input_hint">输入新任务、补充指令，或发送“停止”来取消</string>
+    <string name="session_memory_send">发送</string>
+    <string name="session_memory_stop">停止</string>
+    <string name="session_memory_chat_running">当前会话任务执行中，你可以继续补充指令。</string>
+    <string name="session_memory_chat_idle">当前会话没有执行中的任务。</string>
+    <string name="session_memory_task_cancelled_local">任务已取消</string>
+    <string name="session_memory_busy_other_session">另一个会话正在执行任务，请稍后再试。</string>
+    <string name="session_memory_service_unavailable">服务未就绪，请稍后再试。</string>
+    <string name="session_memory_editor_hint">在这里编辑完整内容</string>
+    <string name="session_memory_editor_saved">已保存</string>
+    <string name="session_memory_write_global">写入全局记忆</string>
+    <string name="session_memory_write_global_success">已写入全局记忆</string>
+    <string name="session_memory_write_global_empty">没有可写入的内容</string>
+    <string name="session_memory_role_user">你</string>
+    <string name="session_memory_role_assistant">AI</string>
+    <string name="session_memory_role_system">系统</string>
+    <string name="session_memory_condensed_summary_short">凝练记忆</string>
+    <string name="session_memory_habit_notes_short">习惯偏好</string>
+    <string name="session_memory_session_prompt_short">会话提示</string>
+    <string name="session_memory_error_lessons_short">会话提示</string>
+    <string name="session_memory_edit_session_name">会话名称</string>
+    <string name="session_memory_edit_session_name_hint">修改当前会话名称</string>
+    <string name="session_memory_condensed_summary">凝练记忆</string>
+    <string name="session_memory_condensed_summary_hint">直接编辑凝练后的记忆摘要</string>
+    <string name="session_memory_saved">会话与记忆设置已保存</string>
+    <string name="session_memory_created">已创建会话：%1$s</string>
+    <string name="session_memory_deleted">会话已删除</string>
+    <string name="session_memory_choose_session">请选择会话</string>
+    <string name="session_memory_enabled">已开启</string>
+    <string name="session_memory_disabled">已关闭</string>
+    <string name="session_memory_session_transcript">近期会话记录</string>
+    <string name="session_memory_session_transcript_hint">用于注入上下文的压缩原始会话记录</string>
+    <string name="session_memory_session_preview">会话预览</string>
+    <string name="session_memory_memory_preview">记忆预览</string>
+    <string name="session_memory_open_details">打开详情并编辑</string>
+    <string name="session_memory_detail_title">会话详情</string>
+    <string name="session_memory_detail_tip">上方预览按最近记录在上显示；下方原始会话和记忆字段仍可继续编辑。</string>
+    <string name="session_memory_preview_empty">暂无会话记录</string>
+    <string name="session_memory_memory_empty">暂无凝练记忆</string>
+    <string name="session_memory_delete_title">删除会话</string>
+    <string name="session_memory_delete_message">确定删除会话“%1$s”吗？其会话记录和记忆会一并移除。</string>
+    <string name="session_memory_delete_action">删除</string>
+    <string name="session_memory_habit_notes">习惯偏好</string>
+    <string name="session_memory_habit_notes_hint">每行一条习惯或偏好</string>
+    <string name="session_memory_session_prompt">会话提示</string>
+    <string name="session_memory_session_prompt_hint">仅在当前会话生效的额外提示</string>
+    <string name="session_memory_error_lessons">会话提示</string>
+    <string name="session_memory_error_lessons_hint">仅在当前会话生效的额外提示</string>
+    <string name="session_memory_global_memory">全局记忆</string>
+    <string name="session_memory_global_memory_hint">跨会话共享，开启后才会生效</string>
+    <string name="session_memory_global_prompt">全局提示词</string>
+    <string name="session_memory_global_prompt_hint">跨会话共享，开启后才会生效</string>
     <string name="lan_config_stopped">已关闭</string>
     <string name="lan_config_no_wifi">请先连接 WiFi</string>
 
@@ -140,6 +227,13 @@
     <!-- 悬浮窗 -->
     <string name="floating_ai_label">AI</string>
     <string name="floating_task_received">已收到：\"%s\"</string>
+    <string name="floating_task_input_title">已暂停任务</string>
+    <string name="floating_task_input_hint">在这里补充指令、纠正方向或增加限制条件</string>
+    <string name="floating_task_resume">继续任务</string>
+    <string name="floating_task_send_and_resume">发送</string>
+    <string name="floating_task_followup_empty">请先输入补充内容</string>
+    <string name="floating_task_followup_sent">补充指令已加入，任务将继续执行</string>
+    <string name="floating_task_followup_failed">补充指令发送失败</string>
 
     <!-- 前台服务通知 -->
     <string name="notification_channel_name">ApkClaw 运行状态</string>
@@ -156,6 +250,8 @@
     <string name="channel_msg_task_error">遇到了错误：%s</string>
     <string name="channel_msg_no_accessibility">缺少无障碍权限，无法执行任务</string>
     <string name="channel_msg_task_in_progress">有任务执行中，请稍候</string>
+    <string name="channel_msg_followup_queued">补充指令已加入队列，将在下一轮合并到当前任务中。</string>
+    <string name="channel_msg_followup_queue_failed">补充指令加入失败，请稍后重试。</string>
     <string name="channel_msg_system_dialog_blocked">可能有系统弹窗遮挡了屏幕，请检查并手动处理后重试</string>
 
     <!-- 无障碍 -->

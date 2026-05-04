@@ -1,6 +1,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- 应用主题 - 浅色 -->
     <style name="Theme.ApkClaw" parent="Theme.Material3.Light.NoActionBar">
+        <item name="android:forceDarkAllowed">false</item>
         <!-- Primary colors -->
         <item name="colorPrimary">@color/colorBrandPrimary</item>
         <item name="colorOnPrimary">@color/colorBrandOnPrimary</item>
@@ -67,6 +68,16 @@
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:backgroundDimEnabled">false</item>
         <item name="android:windowAnimationStyle">@null</item>
+    </style>
+
+    <style name="Theme.ApkClaw.Transparent" parent="Theme.ApkClaw">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowAnimationStyle">@null</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
     </style>
 
     <!-- 对话框样式 -->

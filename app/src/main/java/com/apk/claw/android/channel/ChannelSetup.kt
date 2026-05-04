@@ -3,6 +3,7 @@ package com.apk.claw.android.channel
 import com.apk.claw.android.ClawApplication
 import com.apk.claw.android.R
 import com.apk.claw.android.TaskOrchestrator
+import com.apk.claw.android.session.SessionMemoryCommandHandler
 import com.apk.claw.android.service.ClawAccessibilityService
 import com.apk.claw.android.utils.KVUtils
 
@@ -30,6 +31,12 @@ class ChannelSetup(
         ChannelManager.setOnMessageReceivedListener(object : ChannelManager.OnMessageReceivedListener {
             override fun onMessageReceived(channel: Channel, message: String, messageID: String) {
                 val app = ClawApplication.instance
+                if (channel == Channel.FEISHU && SessionMemoryCommandHandler.handleIfCommand(message, messageID)) {
+                    return
+                }
+                if (channel == Channel.FEISHU && taskOrchestrator.enqueueOrHandleRunningTaskMessage(channel, message, messageID)) {
+                    return
+                }
                 if (!ClawAccessibilityService.isRunning()) {
                     ChannelManager.sendMessage(channel, app.getString(R.string.channel_msg_no_accessibility), messageID)
                     ChannelManager.flushMessages(channel)

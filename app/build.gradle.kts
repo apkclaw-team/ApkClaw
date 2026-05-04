@@ -24,7 +24,9 @@ android {
             val props = Properties().apply {
                 rootProject.file("local.properties").takeIf { it.exists() }?.inputStream()?.use { load(it) }
             }
-            storeFile = file(props.getProperty("KEYSTORE_FILE", ""))
+            props.getProperty("KEYSTORE_FILE", "").takeIf { it.isNotBlank() }?.let {
+                storeFile = file(it)
+            }
             storePassword = props.getProperty("KEYSTORE_PASSWORD", "")
             keyAlias = props.getProperty("KEY_ALIAS", "")
             keyPassword = props.getProperty("KEY_PASSWORD", "")
@@ -35,8 +37,8 @@ android {
         applicationId = "com.apk.claw.android"
         minSdk = 28
         targetSdk = 36
-        versionCode = 2
-        versionName = "0.0.2"
+        versionCode = 5
+        versionName = "0.0.5"
         buildConfigField("String", "VERSION_INFO", getVersionGit())
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

@@ -29,6 +29,7 @@ import com.lzf.easyfloat.utils.DisplayUtils
 object FloatingCircleManager {
 
     private const val FLOAT_TAG = "circle_float"
+    private const val INPUT_PANEL_TAG = "task_input_panel_float"
     private const val KEY_FLOAT_X = "floating_circle_x"
     private const val KEY_FLOAT_Y = "floating_circle_y"
     private const val AUTO_RESET_DELAY_MS = 5000L // 5秒后自动重置
@@ -152,6 +153,77 @@ object FloatingCircleManager {
             EasyFloat.dismiss(FLOAT_TAG)
             isShowing = false
         }
+        EasyFloat.dismiss(INPUT_PANEL_TAG)
+    }
+
+    fun showTaskInputPanel(
+        onResume: () -> Boolean,
+        onSendAndResume: (String) -> Boolean,
+        onStop: () -> Unit
+    ) {
+        val application = appRef ?: return
+        EasyFloat.dismiss(INPUT_PANEL_TAG)
+        var handled = false
+
+        EasyFloat.with(application)
+            .setLayout(R.layout.activity_floating_task_input)
+            .setShowPattern(ShowPattern.ALL_TIME)
+            .setGravity(android.view.Gravity.START or android.view.Gravity.TOP, 0, 0)
+            .setDragEnable(false)
+            .hasEditText(true)
+            .setTag(INPUT_PANEL_TAG)
+            .registerCallbacks(object : OnFloatCallbacks {
+                override fun createdResult(isCreated: Boolean, msg: String?, view: View?) {
+                    if (!isCreated || view == null) return
+                    val etFollowUp = view.findViewById<android.widget.EditText>(R.id.etFloatingFollowUp)
+                    val backdrop = view.findViewById<View>(R.id.floatingInputBackdrop)
+                    val panel = view.findViewById<View>(R.id.floatingInputPanel)
+
+                    view.findViewById<View>(R.id.btnFloatingResume)?.setOnClickListener {
+                        handled = true
+                        onResume()
+                        EasyFloat.dismiss(INPUT_PANEL_TAG)
+                    }
+                    view.findViewById<View>(R.id.btnFloatingStop)?.setOnClickListener {
+                        handled = true
+                        onStop()
+                        EasyFloat.dismiss(INPUT_PANEL_TAG)
+                    }
+                    view.findViewById<View>(R.id.btnFloatingSend)?.setOnClickListener {
+                        val text = etFollowUp?.text?.toString()?.trim().orEmpty()
+                        if (text.isBlank()) {
+                            android.widget.Toast.makeText(application, R.string.floating_task_followup_empty, android.widget.Toast.LENGTH_SHORT).show()
+                            return@setOnClickListener
+                        }
+                        if (onSendAndResume(text)) {
+                            handled = true
+                            android.widget.Toast.makeText(application, R.string.floating_task_followup_sent, android.widget.Toast.LENGTH_SHORT).show()
+                            EasyFloat.dismiss(INPUT_PANEL_TAG)
+                        } else {
+                            android.widget.Toast.makeText(application, R.string.floating_task_followup_failed, android.widget.Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                    backdrop?.setOnClickListener {
+                        handled = true
+                        onResume()
+                        EasyFloat.dismiss(INPUT_PANEL_TAG)
+                    }
+                    panel?.setOnClickListener { }
+                }
+
+                override fun dismiss() {
+                    if (!handled) {
+                        onResume()
+                    }
+                }
+
+                override fun show(view: View) = Unit
+                override fun hide(view: View) = Unit
+                override fun drag(view: View, event: MotionEvent) = Unit
+                override fun dragEnd(view: View) = Unit
+                override fun touchEvent(view: View, event: MotionEvent) = Unit
+            })
+            .show()
     }
 
     /**
@@ -173,7 +245,7 @@ object FloatingCircleManager {
      * @param taskText 任务文本（会截断显示）
      * @param channel 消息来源渠道
      */
-    fun showTaskNotify(taskText: String, channel: Channel) {
+    fun showTaskNotify(taskText: String, channel: Channel?) {
         ThreadUtils.runOnUiThread {
             pendingTaskText = taskText
             currentChannel = channel
@@ -199,7 +271,7 @@ object FloatingCircleManager {
      * @param round 当前轮数
      * @param channel 消息来源渠道
      */
-    fun setRunningState(round: Int, channel: Channel) {
+    fun setRunningState(round: Int, channel: Channel?) {
         ThreadUtils.runOnUiThread {
             currentRound = round
             currentChannel = channel

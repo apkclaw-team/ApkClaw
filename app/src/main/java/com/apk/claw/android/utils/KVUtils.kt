@@ -16,6 +16,12 @@ import com.tencent.mmkv.MMKV
  */
 object KVUtils {
 
+    const val DEFAULT_WAIT_SCALE_PERCENT = 100
+    const val DEFAULT_TAP_WAIT_AFTER_MS = 2000
+    const val DEFAULT_OPEN_APP_WAIT_AFTER_MS = 3000
+    const val DEFAULT_INPUT_WAIT_AFTER_MS = 1000
+    private const val MAX_EFFECTIVE_WAIT_AFTER_MS = 10000
+
 
     // 钉钉配置
     const val KEY_DINGTALK_APP_KEY = "DEFAULT_DINGTALK_APP_KEY"
@@ -192,6 +198,12 @@ object KVUtils {
     private const val KEY_LLM_API_KEY = "KEY_LLM_API_KEY"
     private const val KEY_LLM_BASE_URL = "KEY_LLM_BASE_URL"
     private const val KEY_LLM_MODEL_NAME = "KEY_LLM_MODEL_NAME"
+    private const val KEY_AGENT_MAX_ITERATIONS = "KEY_AGENT_MAX_ITERATIONS"
+    private const val KEY_WAIT_SCALE_PERCENT = "KEY_WAIT_SCALE_PERCENT"
+    private const val KEY_TAP_WAIT_AFTER_MS = "KEY_TAP_WAIT_AFTER_MS"
+    private const val KEY_OPEN_APP_WAIT_AFTER_MS = "KEY_OPEN_APP_WAIT_AFTER_MS"
+    private const val KEY_INPUT_WAIT_AFTER_MS = "KEY_INPUT_WAIT_AFTER_MS"
+    private const val DEFAULT_AGENT_MAX_ITERATIONS = 60
 
     fun getLlmApiKey(): String = getString(KEY_LLM_API_KEY, "")
     fun setLlmApiKey(value: String) = putString(KEY_LLM_API_KEY, value)
@@ -199,6 +211,38 @@ object KVUtils {
     fun setLlmBaseUrl(value: String) = putString(KEY_LLM_BASE_URL, value)
     fun getLlmModelName(): String = getString(KEY_LLM_MODEL_NAME, "")
     fun setLlmModelName(value: String) = putString(KEY_LLM_MODEL_NAME, value)
+    fun getAgentMaxIterations(): Int = getInt(KEY_AGENT_MAX_ITERATIONS, DEFAULT_AGENT_MAX_ITERATIONS)
+    fun setAgentMaxIterations(value: Int) = putInt(KEY_AGENT_MAX_ITERATIONS, value)
+
+    fun getWaitScalePercent(): Int = getInt(KEY_WAIT_SCALE_PERCENT, DEFAULT_WAIT_SCALE_PERCENT).coerceIn(0, 200)
+    fun setWaitScalePercent(value: Int) = putInt(KEY_WAIT_SCALE_PERCENT, value.coerceIn(0, 200))
+
+    fun getTapWaitAfterMs(): Int = getInt(KEY_TAP_WAIT_AFTER_MS, DEFAULT_TAP_WAIT_AFTER_MS).coerceAtLeast(0)
+    fun setTapWaitAfterMs(value: Int) = putInt(KEY_TAP_WAIT_AFTER_MS, value.coerceAtLeast(0))
+
+    fun getOpenAppWaitAfterMs(): Int = getInt(KEY_OPEN_APP_WAIT_AFTER_MS, DEFAULT_OPEN_APP_WAIT_AFTER_MS).coerceAtLeast(0)
+    fun setOpenAppWaitAfterMs(value: Int) = putInt(KEY_OPEN_APP_WAIT_AFTER_MS, value.coerceAtLeast(0))
+
+    fun getInputWaitAfterMs(): Int = getInt(KEY_INPUT_WAIT_AFTER_MS, DEFAULT_INPUT_WAIT_AFTER_MS).coerceAtLeast(0)
+    fun setInputWaitAfterMs(value: Int) = putInt(KEY_INPUT_WAIT_AFTER_MS, value.coerceAtLeast(0))
+
+    fun resetWaitTimingDefaults() {
+        setWaitScalePercent(DEFAULT_WAIT_SCALE_PERCENT)
+        setTapWaitAfterMs(DEFAULT_TAP_WAIT_AFTER_MS)
+        setOpenAppWaitAfterMs(DEFAULT_OPEN_APP_WAIT_AFTER_MS)
+        setInputWaitAfterMs(DEFAULT_INPUT_WAIT_AFTER_MS)
+    }
+
+    fun getEffectiveTapWaitAfterMs(): Int = scaleWait(getTapWaitAfterMs())
+
+    fun getEffectiveOpenAppWaitAfterMs(): Int = scaleWait(getOpenAppWaitAfterMs())
+
+    fun getEffectiveInputWaitAfterMs(): Int = scaleWait(getInputWaitAfterMs())
+
+    private fun scaleWait(baseMs: Int): Int {
+        val scaled = (baseMs.toLong() * getWaitScalePercent().toLong()) / 100L
+        return scaled.coerceIn(0L, MAX_EFFECTIVE_WAIT_AFTER_MS.toLong()).toInt()
+    }
 
     /** 是否已配置 LLM（API Key 非空即视为已配置） */
     fun hasLlmConfig(): Boolean = getLlmApiKey().isNotEmpty()

@@ -69,6 +69,33 @@
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
+            android:name=".ui.settings.SessionMemoryActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.settings.WaitTimingSettingsActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.settings.SessionChatActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".ui.settings.SessionMemoryTextEditorActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.floating.FloatingTaskInputActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:launchMode="singleTop"
+            android:theme="@style/Theme.ApkClaw.Transparent" />
+        <activity
+            android:name=".ui.settings.SessionMemoryDetailActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".ui.settings.ChannelConfigActivity"
             android:exported="false"
             android:screenOrientation="portrait" />

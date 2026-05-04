@@ -60,11 +60,98 @@
     <string name="home_cancel_task">Stop current task</string>
     <string name="home_cancel_task_success">AI task stopped</string>
     <string name="home_no_task_running">No task is running</string>
+    <string name="home_version">Version %1$s</string>
 
     <!-- Settings -->
     <string name="settings_title">Settings</string>
     <string name="settings_group_channel">Channels</string>
     <string name="settings_group_model">Model</string>
+    <string name="menu_session_memory">Session &amp; Memory</string>
+    <string name="menu_wait_timing">Wait Timing</string>
+    <string name="wait_timing_title">Wait Timing</string>
+    <string name="wait_timing_tip">Configure the recommended wait_after values used by the AI. The global scale factor is applied before the three recommended waits.</string>
+    <string name="wait_timing_scale_label">Global Scale Factor (0% - 200%)</string>
+    <string name="wait_timing_scale_hint">100</string>
+    <string name="wait_timing_tap_label">Tap recommended wait (ms)</string>
+    <string name="wait_timing_tap_hint">2000</string>
+    <string name="wait_timing_open_app_label">Open app recommended wait (ms)</string>
+    <string name="wait_timing_open_app_hint">3000</string>
+    <string name="wait_timing_input_label">Input recommended wait (ms)</string>
+    <string name="wait_timing_input_hint">1000</string>
+    <string name="wait_timing_restore_defaults">Restore Defaults</string>
+    <string name="wait_timing_saved">Wait timing saved</string>
+    <string name="wait_timing_restored">Defaults restored</string>
+    <string name="wait_timing_invalid_scale">Scale factor must be between 0 and 200</string>
+    <string name="wait_timing_invalid_wait">Wait time must be 0 or greater</string>
+    <string name="wait_timing_effective_summary">Effective values: tap %1$dms, open app %2$dms, input %3$dms</string>
+    <string name="wait_timing_history_note">Note: old wait_after values, recommended waits, and scale hints from session history are no longer injected into the AI. Current tasks only use the latest saved wait settings.</string>
+    <string name="wait_timing_summary">%1$d%%</string>
+
+    <string name="session_memory_title">Session &amp; Memory</string>
+    <string name="session_memory_tip">Manage multiple sessions here. Open a session to review the full chat history and send new instructions directly from the chat page.</string>
+    <string name="session_memory_enable_session">Enable Session Context</string>
+    <string name="session_memory_enable_memory">Enable Global Memory</string>
+    <string name="session_memory_enable_global_prompt">Enable Global Prompt</string>
+    <string name="session_memory_current_session">Current Session</string>
+    <string name="session_memory_new_session">Create New Session</string>
+    <string name="session_memory_new_session_hint">e.g. Daily WeChat Ops</string>
+    <string name="session_memory_create_session">New Session</string>
+    <string name="session_memory_open_chat">Chat</string>
+    <string name="session_memory_empty_sessions">No sessions yet.</string>
+    <string name="session_memory_updated_at">Updated: %1$s</string>
+    <string name="session_memory_current_badge">Current</string>
+    <string name="session_memory_chat_input_hint">Type a new task, follow-up, or send &quot;stop&quot; to cancel</string>
+    <string name="session_memory_send">Send</string>
+    <string name="session_memory_stop">Stop</string>
+    <string name="session_memory_chat_running">Task is running in this session. You can continue sending follow-up instructions.</string>
+    <string name="session_memory_chat_idle">No running task in this session.</string>
+    <string name="session_memory_task_cancelled_local">Task cancelled</string>
+    <string name="session_memory_busy_other_session">Another session is currently executing a task. Please wait.</string>
+    <string name="session_memory_service_unavailable">Service is not ready. Please try again later.</string>
+    <string name="session_memory_editor_hint">Edit the full text here</string>
+    <string name="session_memory_editor_saved">Saved</string>
+    <string name="session_memory_write_global">Write Into Global Memory</string>
+    <string name="session_memory_write_global_success">Written into global memory</string>
+    <string name="session_memory_write_global_empty">Nothing to write</string>
+    <string name="session_memory_role_user">You</string>
+    <string name="session_memory_role_assistant">AI</string>
+    <string name="session_memory_role_system">System</string>
+    <string name="session_memory_condensed_summary_short">Memory</string>
+    <string name="session_memory_habit_notes_short">Habits</string>
+    <string name="session_memory_session_prompt_short">Prompt</string>
+    <string name="session_memory_edit_session_name">Session Name</string>
+    <string name="session_memory_edit_session_name_hint">Edit this session name</string>
+    <string name="session_memory_condensed_summary">Condensed Memory</string>
+    <string name="session_memory_condensed_summary_hint">Edit the condensed memory summary directly</string>
+    <string name="session_memory_global_memory">Global Memory</string>
+    <string name="session_memory_global_memory_hint">Cross-session memory that only takes effect when enabled</string>
+    <string name="session_memory_global_prompt">Global Prompt</string>
+    <string name="session_memory_global_prompt_hint">Global reusable prompt instructions that only take effect when enabled</string>
+    <string name="session_memory_saved">Session memory settings saved</string>
+    <string name="session_memory_created">Created session: %1$s</string>
+    <string name="session_memory_deleted">Session deleted</string>
+    <string name="session_memory_choose_session">Please choose a session</string>
+    <string name="session_memory_enabled">Enabled</string>
+    <string name="session_memory_disabled">Disabled</string>
+    <string name="session_memory_session_transcript">Recent Session Transcript</string>
+    <string name="session_memory_session_transcript_hint">Compressed raw session transcript used for session context injection</string>
+    <string name="session_memory_session_preview">Session Preview</string>
+    <string name="session_memory_memory_preview">Memory Preview</string>
+    <string name="session_memory_open_details">Open Details and Edit</string>
+    <string name="session_memory_detail_title">Session Details</string>
+    <string name="session_memory_detail_tip">The transcript preview shows the newest blocks first. Raw transcript and memory fields below remain editable.</string>
+    <string name="session_memory_preview_empty">No session records yet.</string>
+    <string name="session_memory_memory_empty">No condensed memory yet.</string>
+    <string name="session_memory_delete_title">Delete Session</string>
+    <string name="session_memory_delete_message">Delete session "%1$s"? Its transcript and memory will be removed.</string>
+    <string name="session_memory_delete_action">Delete</string>
+    <string name="session_memory_habit_notes">Habit Notes</string>
+    <string name="session_memory_habit_notes_hint">One line per habit or preference</string>
+    <string name="session_memory_session_prompt">Session Prompt</string>
+    <string name="session_memory_session_prompt_hint">Session-only prompt instructions used only in this conversation</string>
+    <string name="session_memory_error_lessons">Session Prompt</string>
+    <string name="session_memory_error_lessons_hint">Session-only prompt instructions used only in this conversation</string>
+    <string name="session_memory_error_lessons_short">Prompt</string>
 
     <!-- Unbind -->
     <string name="unbind_title">Disconnect</string>
@@ -116,8 +203,11 @@
     <string name="llm_config_base_url_hint">e.g. https://api.openai.com/v1 (leave empty for OpenAI default)</string>
     <string name="llm_config_model_name">Model Name</string>
     <string name="llm_config_model_name_hint">e.g. gpt-4o, gpt-4o-mini, claude-3-5-sonnet</string>
+    <string name="llm_config_max_iterations">Max Iterations</string>
+    <string name="llm_config_max_iterations_hint">e.g. 60</string>
     <string name="llm_config_saved">LLM configuration saved</string>
     <string name="llm_config_api_key_required">Please enter API Key</string>
+    <string name="llm_config_max_iterations_invalid">Please enter a max iterations value greater than 0</string>
     <string name="menu_llm_config">LLM Config</string>
 
     <!-- Settings Menu -->
@@ -140,6 +230,13 @@
     <!-- Floating -->
     <string name="floating_ai_label">AI</string>
     <string name="floating_task_received">Received: \"%s\"</string>
+    <string name="floating_task_input_title">Paused Task</string>
+    <string name="floating_task_input_hint">Add follow-up instructions, corrections, or constraints here</string>
+    <string name="floating_task_resume">Resume</string>
+    <string name="floating_task_send_and_resume">Send</string>
+    <string name="floating_task_followup_empty">Enter follow-up text first</string>
+    <string name="floating_task_followup_sent">Follow-up added. The task will continue now.</string>
+    <string name="floating_task_followup_failed">Failed to send the follow-up instruction</string>
 
     <!-- Foreground Service Notification -->
     <string name="notification_channel_name">ApkClaw Status</string>
@@ -149,6 +246,7 @@
 
     <!-- Channel Messages -->
     <string name="channel_msg_task_cancelled">Task cancelled manually</string>
+    <string name="channel_msg_task_cancelled_by_followup">Task cancelled by follow-up message</string>
     <string name="channel_msg_service_not_ready">Service not ready, please try again later</string>
     <string name="channel_msg_tool_success">Success</string>
     <string name="channel_msg_tool_failure">Failed</string>
@@ -156,6 +254,8 @@
     <string name="channel_msg_task_error">Error: %s</string>
     <string name="channel_msg_no_accessibility">Accessibility permission missing, cannot execute task</string>
     <string name="channel_msg_task_in_progress">A task is already running, please wait</string>
+    <string name="channel_msg_followup_queued">Follow-up instruction queued. It will be merged into the running task on the next round.</string>
+    <string name="channel_msg_followup_queue_failed">Failed to queue the follow-up instruction. Please try again.</string>
     <string name="channel_msg_system_dialog_blocked">A system dialog may be blocking the screen. Please check and handle it manually, then try again.</string>
 
     <!-- Accessibility -->
