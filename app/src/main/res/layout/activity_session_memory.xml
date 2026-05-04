@@ -155,7 +155,7 @@
         android:gravity="center"
         android:padding="32dp"
         android:text="@string/session_memory_empty_sessions"
-        android:textColor="#98A2B3"
+        android:textColor="@color/colorTextTertiary"
         android:textSize="14sp"
         android:visibility="gone" />
 

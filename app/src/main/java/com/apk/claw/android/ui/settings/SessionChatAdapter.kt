@@ -1,7 +1,6 @@
 package com.apk.claw.android.ui.settings
 
 import android.content.Context
-import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -10,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import com.apk.claw.android.R
 import com.apk.claw.android.session.SessionChatMessage
 import com.apk.claw.android.session.SessionMemoryManager
@@ -20,6 +20,7 @@ import java.util.Locale
 class SessionChatAdapter(context: Context) : BaseAdapter() {
 
     private val inflater = LayoutInflater.from(context)
+    private val appContext = context
     private val timeFormatter = SimpleDateFormat("HH:mm", Locale.getDefault())
     private var items: List<SessionChatMessage> = emptyList()
 
@@ -51,13 +52,26 @@ class SessionChatAdapter(context: Context) : BaseAdapter() {
         holder.tvMessage.background = GradientDrawable().apply {
             cornerRadius = 28f
             setColor(
-                when {
-                    isUser -> Color.parseColor("#DDEFFF")
-                    isSystem -> Color.parseColor("#F4F4F4")
-                    else -> Color.parseColor("#FFFFFF")
-                }
+                ContextCompat.getColor(
+                    appContext,
+                    when {
+                        isUser -> R.color.colorSessionBubbleUser
+                        isSystem -> R.color.colorSessionBubbleSystem
+                        else -> R.color.colorSessionBubbleAssistant
+                    }
+                )
             )
-            setStroke(2, Color.parseColor(if (isSystem) "#D8D8D8" else "#E7E7E7"))
+            setStroke(
+                2,
+                ContextCompat.getColor(
+                    appContext,
+                    when {
+                        isUser -> R.color.colorSessionBubbleUserBorder
+                        isSystem -> R.color.colorSessionBubbleSystemBorder
+                        else -> R.color.colorSessionBubbleAssistantBorder
+                    }
+                )
+            )
         }
         return view
     }

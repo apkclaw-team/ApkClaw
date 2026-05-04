@@ -12,7 +12,6 @@
         android:layout_height="wrap_content" />
 
     <LinearLayout
-        android:id="@+id/chatInputPanel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -76,7 +75,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:textColor="#667085"
+            android:textColor="@color/colorTextSecondary"
             android:textSize="13sp" />
     </LinearLayout>
 
@@ -106,6 +105,7 @@
     </FrameLayout>
 
     <LinearLayout
+        android:id="@+id/chatInputPanel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"

@@ -1,6 +1,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- 应用主题 - 浅色 -->
     <style name="Theme.ApkClaw" parent="Theme.Material3.Light.NoActionBar">
+        <item name="android:forceDarkAllowed">false</item>
         <!-- Primary colors -->
         <item name="colorPrimary">@color/colorBrandPrimary</item>
         <item name="colorOnPrimary">@color/colorBrandOnPrimary</item>

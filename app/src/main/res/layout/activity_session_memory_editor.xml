@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#FFFFFF">
+    android:background="@drawable/bg_session_page">
 
     <com.apk.claw.android.widget.CommonToolbar
         android:id="@+id/toolbar"
@@ -16,10 +16,12 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
+        android:background="@color/colorContainerBrighten"
         android:gravity="top|start"
         android:hint="@string/session_memory_editor_hint"
         android:padding="16dp"
-        android:textColor="#101828"
+        android:textColor="@color/colorTextPrimary"
+        android:textColorHint="@color/colorTextTertiary"
         android:textSize="15sp" />
 
     <LinearLayout

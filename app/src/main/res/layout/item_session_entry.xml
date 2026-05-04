@@ -3,9 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginStart="12dp"
+    android:layout_marginStart="16dp"
     android:layout_marginTop="8dp"
-    android:layout_marginEnd="12dp"
+    android:layout_marginEnd="16dp"
     android:background="@drawable/bg_session_panel"
     android:orientation="horizontal"
     android:padding="14dp">
@@ -25,7 +25,7 @@
                 android:id="@+id/tvSessionName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="#101828"
+                android:textColor="@color/colorTextPrimary"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
@@ -40,7 +40,7 @@
                 android:paddingEnd="8dp"
                 android:paddingBottom="2dp"
                 android:text="@string/session_memory_current_badge"
-                android:textColor="#1E7D34"
+                android:textColor="@color/colorSuccessOnContainer"
                 android:textSize="12sp"
                 android:visibility="gone" />
         </LinearLayout>
@@ -50,7 +50,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
-            android:textColor="#667085"
+            android:textColor="@color/colorTextSecondary"
             android:textSize="13sp" />
     </LinearLayout>
 
