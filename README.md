@@ -6,16 +6,6 @@
 
 当前推荐版本：`v0.0.4`
 
-请在发布到 GitHub 后，把下面这个文件上传到本仓库的 **Releases**，并在 Release 标题中使用 `v0.0.4`：
-
-```text
-app/build/outputs/apk/debug/ApkClaw_v0.0.4_20260504_084846.apk
-SHA256: DE087A0E9BADA6E3788C8B9F4CF1FF76894F5FF1F88BDAD910EF702C8AFBB1E9
-Size: 53,239,523 bytes
-```
-
-发布后，README 顶部这一节就是用户最先看到的下载入口。源码仓库中不直接提交 APK，避免仓库体积变大，也方便以后用 GitHub Release 管理版本。
-
 ## 这个仓库是什么
 
 这是一个个人维护的 ApkClaw 衍生版本，核心能力仍来自原项目：
